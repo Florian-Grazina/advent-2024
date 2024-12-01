@@ -4,6 +4,9 @@
     {
         static void Main(string[] args)
         {
+            // number in the left list / score
+            Dictionary<int, int> scoreDico = [];
+
             int result = 0;
 
             var input = File.ReadAllLines("../../../input.txt");
@@ -24,9 +27,16 @@
 
             for(int i = 0; i < list1.Count; i++)
             {
-                int delta = Math.Abs(list1[i] - list2[i]);
+                if (scoreDico.TryGetValue(list1[i], out int score))
+                    result += score;
 
-                result += delta;
+                else
+                {
+                    score = list2.Where(x => x == list1[i]).Count();
+                    score = score * list1[i];
+                    scoreDico.Add(list1[i], score);
+                    result += score;
+                }
             }
 
             Console.WriteLine(result);
