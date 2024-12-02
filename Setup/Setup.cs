@@ -14,10 +14,7 @@ string programCsPath = Path.Combine(projectPath, "Program.cs");
 if (File.Exists(programCsPath))
 {
     string code = @"
-    using System;
-    using System.IO;
-
-    var input = File.ReadAllLines(""../../../input.txt"");";
+var input = File.ReadAllLines(""../../../input.txt"");";
     
     File.WriteAllText(programCsPath, code.Trim());
 }
