@@ -5,30 +5,28 @@ namespace _02
     internal class Report
     {
         public List<int> Levels = default!;
-
         public bool IsIncreasing;
+        public bool IsSafe = true;
 
         public Report(string input)
         {
             ParseInput(input);
+            IsSafe = GetIsSafe();
         }
 
-        public bool IsSafe()
+        public bool GetIsSafe()
         {
             IsIncreasing = GetIsIncreasing();
+            if (!IsSafe)
+                return false;
+
             bool isDempedUsed = false;
 
             for (int i = 0; i < Levels.Count - 1; i++)
             {
-                int delta;
-
-                if (IsIncreasing)
-                    delta = Levels[i + 1] - Levels[i];
-                else
-                    delta = Levels[i] - Levels[i + 1];
-
-                if (delta == 1 || delta == 2 || delta == 3)
+                if (DeltaIsIn(Levels[i], Levels[i + 1]))
                     continue;
+
                 else
                 {
                     if (isDempedUsed)
@@ -37,7 +35,11 @@ namespace _02
                     isDempedUsed = true;
 
                     if (i == 0)
-                        Levels[i] = Levels[i + 1];
+                    {
+                        if(DeltaIsIn(Levels[i], Levels[i + 2]))
+                            Levels[i + 1] = Levels[i];
+                    }
+
                     else
                         Levels[i + 1] = Levels[i];
                 }
@@ -57,6 +59,10 @@ namespace _02
                 else
                     decreaseCount++;
             }
+
+            if (inscreaseCount >= 2 && decreaseCount >= 2)
+                IsSafe = false;
+
             return inscreaseCount > decreaseCount;
         }
 
@@ -64,6 +70,21 @@ namespace _02
         {
             var array = input.Split(' ');
             Levels = array.Select(int.Parse).ToList();
+        }
+
+        private bool DeltaIsIn(int num1, int num2)
+        {
+            int delta;
+
+            if (IsIncreasing)
+                delta = num2 - num1;
+            else
+                delta = num1 - num2;
+
+            if (delta == 1 || delta == 2 || delta == 3)
+                return true;
+
+            return false;
         }
     }
 }
