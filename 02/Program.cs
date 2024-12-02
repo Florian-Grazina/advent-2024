@@ -2,7 +2,11 @@ using _02;
 using Spectre.Console;
 
 // 431
+// 434
 // 435
+
+// 424
+// 436
 
 var input = File.ReadAllLines("../../../input.txt");
 
@@ -13,7 +17,6 @@ foreach (string line in input)
 }
 
 var result = reports.Where(r => r.IsSafe).Count();
-Console.WriteLine(result);
 
 var grid = new Grid();
 
@@ -31,3 +34,5 @@ foreach (var report in reports)
 };
 
 AnsiConsole.Write(grid);
+
+Console.WriteLine(result);

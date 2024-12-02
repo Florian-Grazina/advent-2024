@@ -11,14 +11,12 @@ namespace _02
         public Report(string input)
         {
             ParseInput(input);
-            IsSafe = GetIsSafe();
+            IsSafe = GetIsSafeV2();
         }
 
         public bool GetIsSafe()
         {
             IsIncreasing = GetIsIncreasing();
-            if (!IsSafe)
-                return false;
 
             bool isDempedUsed = false;
 
@@ -47,6 +45,36 @@ namespace _02
             return true;
         }
 
+        public bool GetIsSafeV2()
+        {
+            IsIncreasing = GetIsIncreasing();
+
+            if (CheckReport(Levels))
+                return true;
+
+            else
+                for (int i = 0; i < Levels.Count; i++)
+                    if (CheckReport(Levels, i))
+                        return true;
+
+            return false;
+        }
+
+        private bool CheckReport(List<int> data, int? indexToSkip = null)
+        {
+            List<int> trimmedData = data.ToList();
+
+            if (indexToSkip.HasValue)
+                trimmedData.RemoveAt(indexToSkip.Value);
+
+            for (int i = 0; i < trimmedData.Count - 1; i++)
+            {
+                if (!DeltaIsIn(trimmedData[i], trimmedData[i + 1]))
+                    return false;
+            }
+            return true;
+        }
+
         private bool GetIsIncreasing()
         {
             int inscreaseCount = 0;
@@ -59,9 +87,6 @@ namespace _02
                 else
                     decreaseCount++;
             }
-
-            if (inscreaseCount >= 2 && decreaseCount >= 2)
-                IsSafe = false;
 
             return inscreaseCount > decreaseCount;
         }
