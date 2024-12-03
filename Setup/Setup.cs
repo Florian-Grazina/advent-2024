@@ -2,7 +2,7 @@
 
 string projectName = args[0];
 
-string solutionPath = "C:\\Users\\fgrazina.PPI\\Source\\repos\\Florian-Grazina\\AOC-2024";
+string solutionPath = "C:\\Users\\fgrazina.PPI\\Source\\repos\\Florian-Grazina\\advent-2024";
 string projectPath = Path.Combine(solutionPath, projectName);
 
 ExecuteCommand($"dotnet new console -n {projectName} -o \"{projectPath}\"");
