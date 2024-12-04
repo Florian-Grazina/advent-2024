@@ -10,10 +10,14 @@ for(int y = 0; y < input.Length; y++)
 
 int result = 0;
 
+Resolver resolver = new();
+
 for (int y = 0; y < map.GetLength(0); y++)
 {
     for(int x = 0; x < map.GetLength(1); x++)
     {
-        result += Resolver.GetResult(map, y, x);
+        result += resolver.GetResult(map, y, x);
     }
 }
+
+Console.WriteLine(result);
