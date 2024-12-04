@@ -31,70 +31,46 @@
 
         public int GetResult(char[,] map, int y, int x)
         {
-            if (map[y, x] != 'X')
+            if (map[y, x] != 'A')
                 return 0;
 
-            int result = 0;
+            if (GetXMASResult(map, y, x, Direction.UpLeft, Direction.DownRight))
+                if (GetXMASResult(map, y, x, Direction.DownLeft, Direction.UpRight))
+                    return 1;
 
-            List<Direction> directions = GetDirections(map, y, x);
-            foreach(Direction direction in directions)
-            {
-                result += GetXMASResult(map, y, x, direction);
-            }
-
-            return result;
+            return 0;
         }
 
-        private List<Direction> GetDirections(char[,] map, int y, int x)
-        {
-            List<Direction> directions = [];
-
-            foreach(var direction in directionDico)
-            {
-                try
-                {
-                    if (map[y + direction.Value.Item1, x + direction.Value.Item2] == 'M')
-                        directions.Add(direction.Key);
-                }
-                catch
-                {
-
-                }
-            }
-            return directions;
-        }
-
-        private int GetXMASResult(char[,] map, int y, int x, Direction direction)
+        private bool GetXMASResult(char[,] map, int y, int x, Direction direction1, Direction direction2)
         {
             try
             {
-                var directionValue = directionDico[direction];
+                List<char> result = [];
 
-                GetNewCoords(ref y, ref x, direction);
-                if (map[y, x] != 'M')
-                    return 0;
+                Tuple<int, int> coords1 = GetNewCoords(y, x, direction1);
+                Tuple<int, int> coords2 = GetNewCoords(y, x, direction2);
 
-                GetNewCoords(ref y, ref x, direction);
-                if (map[y, x] != 'A')
-                    return 0;
+                result.Add(map[coords1.Item1, coords1.Item2]);
+                result.Add(map[coords2.Item1, coords2.Item2]);
 
-                GetNewCoords(ref y, ref x, direction);
-                if (map[y, x] == 'S')
-                    return 1;
+                if (result.Contains('M') && result.Contains('S'))
+                    return true;
 
-                return 0;
+                return false;
             }
             catch
             {
-                return 0;
+                return false;
             }
         }
 
-        private void GetNewCoords(ref int y, ref int x, Direction direction)
+        private Tuple<int, int> GetNewCoords(int y, int x, Direction direction)
         {
             var directionValue = directionDico[direction];
             y += directionValue.Item1;
             x += directionValue.Item2;
+
+            return new Tuple<int, int>(y, x);
         }
     }
 }
