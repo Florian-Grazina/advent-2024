@@ -6,17 +6,56 @@
         public int Y { get; set; }
         public Direction Direction { get; set; }
 
+        public int XOrigin { get; set; }
+        public int YOrigin { get; set; }
+        public Direction DirectionOrigin { get; set; }
+
 
         public Guard(int y, int x, char icon)
         {
             X = x;
             Y = y;
             Direction = SetGuardDirection(icon);
+
+            XOrigin = x;
+            YOrigin = y;
+            DirectionOrigin = Direction;
+        }
+
+        public void RollBack()
+        {
+            X = XOrigin;
+            Y = YOrigin;
+            Direction = DirectionOrigin;
         }
 
         public (int, int) GetPosition()
         {
             return (Y, X);
+        }
+
+        public (int, int) GetPositionAfterTurn()
+        {
+            return Direction switch
+            {
+                Direction.Up => (Y, X + 1),
+                Direction.Down => (Y, X - 1),
+                Direction.Left => (Y + 1, X),
+                Direction.Right => (Y - 1, X),
+                _ => throw new Exception("Invalid direction")
+            };
+        }
+
+        public Direction GetDirectionAfterTurn()
+        {
+            return Direction switch
+            {
+                Direction.Up => Direction.Right,
+                Direction.Right => Direction.Down,
+                Direction.Down => Direction.Left,
+                Direction.Left => Direction.Up,
+                _ => throw new Exception("Invalid direction")
+            };
         }
 
         public void Move()
