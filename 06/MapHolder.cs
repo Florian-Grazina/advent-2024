@@ -1,145 +1,116 @@
-﻿
-
-using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace _06
+﻿namespace _06
 {
     internal class MapHolder
     {
         private readonly char[,] map;
         private Guard guard = default!;
-        private Dictionary<(int, int), Direction> coordsDico;
+        private Dictionary<(int, int), List<Direction>> coordsDico;
         private int result = 0;
 
-        private (int, int) lastTurnCoords;
+        private Dictionary<(int, int), List<Direction>> sampleRunPositions;
 
 
         public MapHolder(string[] data)
         {
             map = ParseData(data);
             coordsDico = [];
+            sampleRunPositions = [];
         }
 
         public int RunV2()
         {
-            int total = map.GetLength(0) * map.GetLength(1);
+            Run(true);
+
+            int total = sampleRunPositions.Count;
             int tries = 0;
 
-            for (int y = 0; y < map.GetLength(0); y++)
+            //for (int y = 0; y < map.GetLength(0); y++)
+            //{
+            //    for (int x = 0; x < map.GetLength(1); x++)
+            //    {
+            //        tries++;
+            //        if (tries % 1000 == 0)
+            //            Console.WriteLine($"Starting {tries} / {total}");
+
+            //        if (!sampleRunPositions.TryGetValue((y, x), out _))
+            //            continue;
+
+            //        if (map[y, x] != '.')
+            //            continue;
+
+            //        map[y, x] = '#';
+            //        Run();
+            //        map[y, x] = '.';
+            //        guard.RollBack();
+            //        coordsDico.Clear();
+            //    }
+            //}
+
+            foreach((int, int) pos in sampleRunPositions.Keys)
             {
-                for (int x = 0; x < map.GetLength(1); x++)
-                {
-                    tries++;
+                tries++;
+                if (tries % 100 == 0)
                     Console.WriteLine($"Starting {tries} / {total}");
 
-                    if (map[y, x] != '.')
-                        continue;
+                int y = pos.Item1;
+                int x = pos.Item2;
 
+                if (map[y, x] == '.')
+                {
                     map[y, x] = '#';
                     Run();
                     map[y, x] = '.';
                     guard.RollBack();
                     coordsDico.Clear();
+                    map[guard.Y, guard.X] = '^';
                 }
             }
 
             return result;
         }
 
-        public int RunV3()
+        public void Run(bool isSampleRun = false)
         {
             try
             {
                 while (true)
                 {
-                    if (CheckLoopV3())
-                        result++;
-
-                    AddCoords();
-
-                    guard.Move();
-
-                    if (map[guard.Y, guard.X] == '#')
+                    if (isSampleRun)
+                        AddSampleCoords();
+                    else
                     {
-                        guard.MoveBackAndTurn();
-                        guard.Move();
+                        if (CheckLoop())
+                            break;
+
+                        AddCoords();
                     }
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return result;
-            }
-            throw new Exception("impossible");
-        }
-
-        public bool CheckLoopV3()
-        {
-            Direction directionAfterTurn = guard.GetDirectionAfterTurn();
-            (int, int) position = guard.GetPosition();
-
-            if (CheckIfInDicoRecursive(position, directionAfterTurn))
-                return true;
-
-            return false;
-        }
-
-        private bool CheckIfInDicoRecursive((int, int) position, Direction direction)
-        {
-            switch (direction)
-            {
-                case Direction.Up:
-                    position.Item1--;
-                    break;
-                case Direction.Down:
-                    position.Item1++;
-                    break;
-                case Direction.Left:
-                    position.Item2--;
-                    break;
-                case Direction.Right:
-                    position.Item2++;
-                    break;
-            }
-
-            try
-            {
-                if (coordsDico.TryGetValue(position, out Direction oldDirection))
-                {
-                    if (oldDirection == direction)
-                        return true;
-                }
-
-                else if (map[position.Item1, position.Item2] == '#')
-                    return false;
-
-                return CheckIfInDicoRecursive(position, direction);
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return false;
-            }
-        }
-
-
-        public void Run()
-        {
-            try
-            {
-                while (true)
-                {
-                    if (CheckLoop())
-                        break;
-
-                    AddCoords();
 
                     guard.Move();
 
                     if (map[guard.Y, guard.X] == '#')
                     {
                         guard.MoveBackAndTurn();
+
+                        if (isSampleRun)
+                            AddSampleCoords();
+                        else
+                            AddCoords();
+
+
                         guard.Move();
+
+                        if (map[guard.Y, guard.X] == '#')
+                        {
+                            guard.MoveBackAndTurn();
+
+                            if (isSampleRun)
+                                AddSampleCoords();
+                            else
+                                AddCoords();
+
+
+                            guard.Move();
+                        }
                     }
                 }
             }
@@ -152,28 +123,38 @@ namespace _06
 
         private bool CheckLoop()
         {
-            if (coordsDico.TryGetValue(guard.GetPosition(), out Direction oldFirection))
+            if (coordsDico.TryGetValue(guard.GetPosition(), out List<Direction> oldDirections))
             {
-                if (guard.Direction == oldFirection)
+                foreach (Direction oldDirection in oldDirections)
                 {
-                    result++;
-                    return true;
+                    if (oldDirection == guard.Direction)
+                    {
+                        result++;
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
-        private void RollBackGuard()
-        {
-            guard.Y = lastTurnCoords.Item1;
-            guard.X = lastTurnCoords.Item2;
-            guard.Direction = coordsDico[guard.GetPosition()];
-        }
-
         private void AddCoords()
         {
             (int, int) guardPosition = guard.GetPosition();
-            coordsDico.TryAdd(guardPosition, guard.Direction);
+
+            if (coordsDico.TryGetValue(guardPosition, out List<Direction> oldDirections))
+                oldDirections.Add(guard.Direction);
+            else
+                coordsDico.TryAdd(guardPosition, [guard.Direction]);
+        }
+
+        private void AddSampleCoords()
+        {
+            (int, int) guardPosition = guard.GetPosition();
+
+            if (sampleRunPositions.TryGetValue(guardPosition, out List<Direction> oldDirections))
+                oldDirections.Add(guard.Direction);
+            else
+                sampleRunPositions.TryAdd(guardPosition, [guard.Direction]);
         }
 
         private char[,] ParseData(string[] data)
@@ -191,17 +172,6 @@ namespace _06
                 }
             }
             return map;
-        }
-
-        private void PrintMap()
-        {
-            for (int y = 0; y < map.GetLength(0); y++)
-            {
-                for (int x = 0; x < map.GetLength(1); x++)
-                {
-                    Console.WriteLine();
-                }
-            }
         }
     }
 }
