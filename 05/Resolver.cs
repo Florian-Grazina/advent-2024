@@ -43,8 +43,19 @@ namespace _05
                 if (RuleIsCorrect(listPages, pageRule))
                     continue;
 
+                int index1 = listPages.IndexOf(pageRule.Order1);
+                int index2 = listPages.IndexOf(pageRule.Order2);
 
+                (listPages[index1], listPages[index2]) = (listPages[index2], listPages[index1]);
             }
+        }
+
+        private bool RuleIsCorrect(List<int> listPages, PageRule pageRule)
+        {
+            int index1 = listPages.IndexOf(pageRule.Order1);
+            int index2 = listPages.IndexOf(pageRule.Order2);
+
+            return index1 < index2;
         }
 
         private bool IsUpdateCorrect(List<int> listPages)
