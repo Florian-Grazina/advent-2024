@@ -2,7 +2,8 @@
 
 string projectName = args[0];
 
-string solutionPath = AppContext.BaseDirectory + "..\\..\\..\\..\\";
+string? solutionPath = Directory.GetParent(AppContext.BaseDirectory)?.Parent?.Parent?.Parent?.Parent?.FullName ?? throw new Exception("Solution path not found");
+
 string projectPath = Path.Combine(solutionPath, projectName);
 
 ExecuteCommand($"dotnet new console -n {projectName} -o \"{projectPath}\"");
