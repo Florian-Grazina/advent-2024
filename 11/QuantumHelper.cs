@@ -1,37 +1,59 @@
-﻿namespace _11
+﻿using System.Diagnostics;
+
+namespace _11
 {
     internal class QuantumHelper
     {
-        private Dictionary<long, List<long>> _cache;
+        private Dictionary<uint, uint> _cache;
 
         public QuantumHelper()
         {
             _cache = [];
         }
 
-        internal void Blink(List<long> data, int nbOfBlinks)
+        internal uint Blink(List<uint> data, int nbOfBlinks)
         {
-            for (int i = 0; i < nbOfBlinks; i++)
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            uint result = 0;
+
+            foreach (var item in data)
             {
-                ApplyRule(data);
-                //Console.WriteLine(string.Join(" ", data));
-                Console.WriteLine($"");
+                result += GetResult(item, nbOfBlinks);
             }
+
+            //Console.WriteLine(string.Join(" ", data));
+
+            stopwatch.Stop();
+            Console.WriteLine($"Operation took: {stopwatch.Elapsed.TotalSeconds} seconds");
+
+            return result;
         }
 
-        private void ApplyRule(List<long> data)
+        private uint GetResult(uint item, int nbOfBlinks)
+        {
+            if (_cache.TryGetValue(item, out var value))
+                return value;
+
+            List<uint> tempList = [item];
+
+            for (int i = 0; i < nbOfBlinks; i++)
+            {
+                ApplyRule(tempList);
+            }
+
+            uint result = (uint)tempList.Count;
+
+            _cache.Add(item, result);
+
+            return result;
+        }
+
+        private void ApplyRule(List<uint> data)
         {
             for (int i = data.Count - 1; i >= 0; i--)
             {
-                var ok = data[i];
-
-                if(_cache.TryGetValue(ok, out var value))
-                {
-                    data[i] = value[0];
-                    data.InsertRange(i + 1, value.);
-                    continue;
-                }
-
                 if (data[i] == 0)
                     data[i] = 1;
 
@@ -39,18 +61,22 @@
                 {
                     string stringData = data[i].ToString();
 
-                    string leftData = stringData[..(stringData.Length / 2)];
-                    string rightData = stringData[(stringData.Length / 2)..];
+                    uint leftData = uint.Parse(stringData[..(stringData.Length / 2)]);
+                    uint rightData = uint.Parse(stringData[(stringData.Length / 2)..]);
 
-                    data[i] = long.Parse(leftData);
-                    data.Insert(i + 1, long.Parse(rightData));
+                    data[i] = leftData;
+                    data.Insert(i + 1, rightData);
                 }
 
                 else
-                    data[i] = data[i] * 2024;
+                {
+                    uint result = data[i] * 2024;
+                    if (result > 4294967295) throw new Exception("Overflow");
+                    data[i] = result;
+                }
             }
         }
 
-        private static bool HasEvenDifit(long number) => number.ToString().Length % 2 == 0;
+        private static bool HasEvenDifit(uint number) => number.ToString().Length % 2 == 0;
     }
 }

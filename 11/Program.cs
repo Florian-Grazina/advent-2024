@@ -1,10 +1,10 @@
 using _11;
 
 var input = File.ReadAllText("../../../input.txt").Split(" ");
-List<long> data = input.Select(long.Parse).ToList();
+List<uint> data = input.Select(uint.Parse).ToList();
 
 QuantumHelper quantumHelper = new();
 
-quantumHelper.Blink(data, 25);
+uint result = quantumHelper.Blink(data, 25);
 
-Console.WriteLine(data.Count);
+Console.WriteLine(result);
