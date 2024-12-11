@@ -4,23 +4,26 @@ namespace _11
 {
     internal class QuantumHelper
     {
-        private Dictionary<uint, uint> _cache;
+        private Dictionary<long, long> _resultsDico;
 
         public QuantumHelper()
         {
-            _cache = [];
+            _resultsDico = [];
         }
 
-        internal uint Blink(List<uint> data, int nbOfBlinks)
+        internal long Blink(List<long> data, int nbOfBlinks)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            uint result = 0;
+            long result = 0;
 
             foreach (var item in data)
             {
-                result += GetResult(item, nbOfBlinks);
+                Console.WriteLine($"Starting item {item}");
+                long temp = GetResult(item, nbOfBlinks);
+                result += temp;
+                Console.WriteLine(temp);
             }
 
             //Console.WriteLine(string.Join(" ", data));
@@ -31,52 +34,62 @@ namespace _11
             return result;
         }
 
-        private uint GetResult(uint item, int nbOfBlinks)
+        private long GetResult(long item, int nbOfBlinks)
         {
-            if (_cache.TryGetValue(item, out var value))
+            if (_resultsDico.TryGetValue(item, out var value))
                 return value;
 
-            List<uint> tempList = [item];
+            List<long> tempList = [item];
 
-            for (int i = 0; i < nbOfBlinks; i++)
-            {
-                ApplyRule(tempList);
-            }
+            long result = ApplyRule(tempList, nbOfBlinks);
+            //Console.WriteLine($"{i+1}/{nbOfBlinks}");
 
-            uint result = (uint)tempList.Count;
-
-            _cache.Add(item, result);
+            _resultsDico.Add(item, result);
 
             return result;
         }
 
-        private void ApplyRule(List<uint> data)
+        private long ApplyRule(List<long> data, int nbOfBlinks)
         {
-            for (int i = data.Count - 1; i >= 0; i--)
+            long result = 0;
+
+            for (int blink = 0; blink < nbOfBlinks; blink++)
             {
-                if (data[i] == 0)
-                    data[i] = 1;
-
-                else if (HasEvenDifit(data[i]))
+                for (int i = data.Count - 1; i >= 0; i--)
                 {
-                    string stringData = data[i].ToString();
+                    var ok = data[i];
 
-                    uint leftData = uint.Parse(stringData[..(stringData.Length / 2)]);
-                    uint rightData = uint.Parse(stringData[(stringData.Length / 2)..]);
+                    if (_resultsDico.TryGetValue(ok, out var value))
+                    {
+                        result += value;
+                        data.RemoveAt(i);
+                    }
 
-                    data[i] = leftData;
-                    data.Insert(i + 1, rightData);
-                }
+                    if (data[i] == 0)
+                    {
+                        data[i] = 1;
+                    }
 
-                else
-                {
-                    uint result = data[i] * 2024;
-                    if (result > 4294967295) throw new Exception("Overflow");
-                    data[i] = result;
+                    else if (HasEvenDigit(data[i]))
+                    {
+                        string stringData = data[i].ToString();
+                        long leftData = long.Parse(stringData[..(stringData.Length / 2)]);
+                        long rightData = long.Parse(stringData[(stringData.Length / 2)..]);
+
+                        data[i] = leftData;
+                        data.Insert(i + 1, rightData);
+                    }
+                    else
+                    {
+                        long temp = data[i] * 2024;
+                        data[i] = temp;
+                    }
                 }
             }
+
+            return result + data.Count;
         }
 
-        private static bool HasEvenDifit(uint number) => number.ToString().Length % 2 == 0;
+        private static bool HasEvenDigit(long number) => number.ToString().Length % 2 == 0;
     }
 }
