@@ -6,10 +6,10 @@ List<long> data = input.Select(long.Parse).ToList();
 QuantumHelper quantumHelper = new();
 QuantumHelperPart1 quantumHelper2 = new();
 
-int nb = 7;
+int nb = 75;
 
 long result = quantumHelper.Blink(data, nb);
-long result2 = quantumHelper2.Blink(data, nb);
 
 Console.WriteLine(result);
-Console.WriteLine(result2);
+
+// 126273763853
