@@ -9,7 +9,6 @@ QuantumHelperPart1 quantumHelper2 = new();
 int nb = 75;
 
 long result = quantumHelper.Blink(data, nb);
-//long result2 = quantumHelper2.Blink(data, nb);
 
 Console.WriteLine(result);
-//Console.WriteLine(result2);
+Console.WriteLine(result2);
