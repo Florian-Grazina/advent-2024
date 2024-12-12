@@ -26,8 +26,6 @@ namespace _11
                 Console.WriteLine(temp);
             }
 
-            //Console.WriteLine(string.Join(" ", data));
-
             stopwatch.Stop();
             Console.WriteLine($"Operation took: {stopwatch.Elapsed.TotalSeconds} seconds");
 
@@ -42,7 +40,6 @@ namespace _11
             List<long> tempList = [item];
 
             long result = ApplyRule(tempList, nbOfBlinks);
-            //Console.WriteLine($"{i+1}/{nbOfBlinks}");
 
             _resultsDico.Add(item, result);
 
@@ -55,15 +52,17 @@ namespace _11
 
             for (int blink = 0; blink < nbOfBlinks; blink++)
             {
+                Console.WriteLine($"{blink + 1}/{nbOfBlinks}");
+
                 for (int i = data.Count - 1; i >= 0; i--)
                 {
                     var ok = data[i];
 
-                    if (_resultsDico.TryGetValue(ok, out var value))
-                    {
-                        result += value;
-                        data.RemoveAt(i);
-                    }
+                    //if (_resultsDico.TryGetValue(ok, out var value))
+                    //{
+                    //    result += value;
+                    //    data.RemoveAt(i);
+                    //}
 
                     if (data[i] == 0)
                     {
@@ -87,7 +86,7 @@ namespace _11
                 }
             }
 
-            return result + data.Count;
+            return data.Count;
         }
 
         private static bool HasEvenDigit(long number) => number.ToString().Length % 2 == 0;
