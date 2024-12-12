@@ -7,8 +7,9 @@
         public char Id { get; set; }
         public int Area { get; set; }
         public int Perimeter { get; set; }
+        public int NbOfAngles { get; set; }
 
-        public int Price => Area * Perimeter;
+        public int Price => Area * NbOfAngles;
 
 
         public Garden(char id, (int, int) coords)
@@ -29,20 +30,62 @@
 
             foreach (var item in LandDico)
             {
-                if (GetLandDirection(map, item.Key, Direction.UP) == '#')
-                    Perimeter++;
-                if (GetLandDirection(map, item.Key, Direction.DOWN) == '#')
-                    Perimeter++;
-                if (GetLandDirection(map, item.Key, Direction.RIGHT) == '#')
-                    Perimeter++;
-                if (GetLandDirection(map, item.Key, Direction.LEFT) == '#')
-                    Perimeter++;
+                bool hasBoundUp = GetLandDirection(map, item.Key, Direction.UP) == '#';
+                bool hasBoundRight = GetLandDirection(map, item.Key, Direction.RIGHT) == '#';
+                bool hasBoundDown = GetLandDirection(map, item.Key, Direction.DOWN) == '#';
+                bool hasBoundLeft = GetLandDirection(map, item.Key, Direction.LEFT) == '#';
+
+                if (hasBoundUp && hasBoundRight)
+                    NbOfAngles++;
+                if (hasBoundRight && hasBoundDown)
+                    NbOfAngles++;
+                if (hasBoundDown && hasBoundLeft)
+                    NbOfAngles++;
+                if (hasBoundLeft && hasBoundUp)
+                    NbOfAngles++;
+
+                bool hasSameIdUp = GetLandDirection(map, item.Key, Direction.UP) == Id;
+                bool hasSameIdRight = GetLandDirection(map, item.Key, Direction.RIGHT) == Id;
+                bool hasSameIdDown = GetLandDirection(map, item.Key, Direction.DOWN) == Id;
+                bool hasSameIdLeft = GetLandDirection(map, item.Key, Direction.LEFT) == Id;
+
+                if (hasSameIdUp && hasSameIdRight)
+                {
+                    (int, int) coordsToCheck = (item.Key.Item1 - 1, item.Key.Item2 + 1);
+                    if (CoordsAreInbound(coordsToCheck, map) && map[coordsToCheck.Item1, coordsToCheck.Item2] != Id)
+                        NbOfAngles++;
+                }
+
+                if (hasSameIdUp && hasSameIdLeft)
+                {
+                    (int, int) coordsToCheck = (item.Key.Item1 - 1, item.Key.Item2 - 1);
+                    if (CoordsAreInbound(coordsToCheck, map) && map[coordsToCheck.Item1, coordsToCheck.Item2] != Id)
+                        NbOfAngles++;
+                }
+
+                if (hasSameIdDown && hasSameIdLeft)
+                {
+                    (int, int) coordsToCheck = (item.Key.Item1 + 1, item.Key.Item2 - 1);
+                    if (CoordsAreInbound(coordsToCheck, map) && map[coordsToCheck.Item1, coordsToCheck.Item2] != Id)
+                        NbOfAngles++;
+                }
+
+                if (hasSameIdDown && hasSameIdRight)
+                {
+                    (int, int) coordsToCheck = (item.Key.Item1 + 1, item.Key.Item2 + 1);
+                    if (CoordsAreInbound(coordsToCheck, map) && map[coordsToCheck.Item1, coordsToCheck.Item2] != Id)
+                        NbOfAngles++;
+                }
             }
+        }
+
+        private bool CheckInnerAngle(char[,] map, (int, int) key)
+        {
+            throw new NotImplementedException();
         }
 
         public char GetLandDirection(char[,] map, (int, int) coords, Direction dir)
         {
-            // check up
             (int, int) up = dir switch
             {
                 Direction.UP => (coords.Item1 - 1, coords.Item2),
