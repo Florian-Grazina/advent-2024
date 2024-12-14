@@ -11,4 +11,3 @@ int nb = 75;
 long result = quantumHelper.Blink(data, nb);
 
 Console.WriteLine(result);
-Console.WriteLine(result2);
