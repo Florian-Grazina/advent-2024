@@ -12,9 +12,27 @@ namespace _14
             ParseData(data);
         }
 
-        internal void Move()
+        public void Move()
         {
             Coords = (Coords.Item1 + Velocity.Item1, Coords.Item2 + Velocity.Item2);
+        }
+
+        public short GetQuadrantId(Dictionary<short, Range> quadrantsDico)
+        {
+            foreach(KeyValuePair<short, Range> quadrant in quadrantsDico)
+            {
+                if (IsIn(quadrant))
+                    return quadrant.Key;
+            }
+            return 0;
+        }
+
+        private bool IsIn(KeyValuePair<short, Range> quadrant)
+        {
+            if (Coords.Item1 >= quadrant.Value.MinY && Coords.Item1 <= quadrant.Value.MaxY &&
+                Coords.Item2 >= quadrant.Value.MinX && Coords.Item2 <= quadrant.Value.MaxX)
+                return true;
+            return false;
         }
 
         private void ParseData(string data)
