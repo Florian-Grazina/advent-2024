@@ -16,19 +16,19 @@
 
         public int Run()
         {
+            int index = 0;
             while (Robot.Directions.Count > 0)
             {
-                if(Robot.Directions.Count == 697)
-                {
-                    Console.WriteLine();
-                }
+                index++;
 
                 Direction direction = Robot.Directions.Pop();
                 if (CanMove(Robot, direction))
                     Robot.Move(direction);
 
                 UpdateMap();
-                Print();
+                //Print();
+                Console.WriteLine(index);
+                //Console.WriteLine(direction);
             }
 
             return Boxes.Sum(b => b.GetGpsCoords);
@@ -81,12 +81,13 @@
 
             if (Map[coords.Item1, coords.Item2] == '#')
                 return false;
-            if (Map[coords.Item1, coords.Item2 + 1] == '#')
+
+            if (movable is Box && Map[coords.Item1, coords.Item2 + 1] == '#')
                 return false;
 
             else
             {
-                if(movable is Robot)
+                if (movable is Robot)
                 {
                     Box? box = null;
                     if (Map[coords.Item1, coords.Item2] == '[')
@@ -95,7 +96,7 @@
                     else if (Map[coords.Item1, coords.Item2] == ']')
                         box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2 - 1));
 
-                    if(box != null)
+                    if (box != null)
                     {
                         if (CanMove(box, dir))
                         {
@@ -106,9 +107,9 @@
                     }
                 }
 
-                else if (movable is Box || dir == Direction.RIGHT || dir == Direction.LEFT)
+                else if (movable is Box && dir == Direction.RIGHT || dir == Direction.LEFT)
                 {
-                    if(dir == Direction.RIGHT)
+                    if (dir == Direction.RIGHT)
                         coords = (coords.Item1, coords.Item2 + 1);
 
                     Box? box = null;
@@ -129,7 +130,7 @@
                     }
                 }
 
-                else if(movable is Box)
+                else if (movable is Box)
                 {
                     List<Box> boxes = [];
 
@@ -154,12 +155,12 @@
                             boxes.Add(box);
                     }
 
-                    if (Map[coords.Item1, coords.Item2 + 1] == ']')
-                    {
-                        Box box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2));
-                        if (box != null)
-                            boxes.Add(box);
-                    }
+                    //if (Map[coords.Item1, coords.Item2 + 1] == ']')
+                    //{
+                    //    Box box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2));
+                    //    if (box != null)
+                    //        boxes.Add(box);
+                    //}
 
                     if (boxes.Count > 0)
                     {
@@ -173,7 +174,7 @@
                             }
                         }
 
-                        if(canMove)
+                        if (canMove)
                         {
                             foreach (Box box in boxes)
                                 box.Move(dir);
