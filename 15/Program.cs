@@ -8,4 +8,4 @@ string commands = input[1];
 Robot robot = new (commands);
 
 MapHolder mapHolder = new (map, robot);
-//Console.WriteLine(mapHolder.Run());
+Console.WriteLine(mapHolder.Run());

@@ -18,12 +18,17 @@
         {
             while (Robot.Directions.Count > 0)
             {
+                if(Robot.Directions.Count == 697)
+                {
+                    Console.WriteLine();
+                }
+
                 Direction direction = Robot.Directions.Pop();
                 if (CanMove(Robot, direction))
                     Robot.Move(direction);
 
                 UpdateMap();
-                //Print();
+                Print();
             }
 
             return Boxes.Sum(b => b.GetGpsCoords);
@@ -31,9 +36,9 @@
 
         private void UpdateMap()
         {
-            for (int y = 0; y < Map.GetLength(1); y++)
+            for (int y = 0; y < Map.GetLength(0); y++)
             {
-                for (int x = 0; x < Map.GetLength(0); x++)
+                for (int x = 0; x < Map.GetLength(1); x++)
                 {
                     if (Map[y, x] == '.' || Map[y, x] == '#')
                         continue;
@@ -44,7 +49,10 @@
             Map[Robot.Y, Robot.X] = '@';
 
             foreach (var box in Boxes)
-                Map[box.Y, box.X] = 'O';
+            {
+                Map[box.Y, box.X] = '[';
+                Map[box.Y, box.X + 1] = ']';
+            }
         }
 
         public void Print()
@@ -73,19 +81,108 @@
 
             if (Map[coords.Item1, coords.Item2] == '#')
                 return false;
+            if (Map[coords.Item1, coords.Item2 + 1] == '#')
+                return false;
 
             else
             {
-                Box? box = Boxes.FirstOrDefault(b => b.Coords == coords);
-                if (box != null)
+                if(movable is Robot)
                 {
-                    if (CanMove(box, dir))
+                    Box? box = null;
+                    if (Map[coords.Item1, coords.Item2] == '[')
+                        box = Boxes.First(b => b.Coords == coords);
+
+                    else if (Map[coords.Item1, coords.Item2] == ']')
+                        box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2 - 1));
+
+                    if(box != null)
                     {
-                        box.Move(dir);
-                        return true;
+                        if (CanMove(box, dir))
+                        {
+                            box.Move(dir);
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
                 }
+
+                else if (movable is Box || dir == Direction.RIGHT || dir == Direction.LEFT)
+                {
+                    if(dir == Direction.RIGHT)
+                        coords = (coords.Item1, coords.Item2 + 1);
+
+                    Box? box = null;
+                    if (Map[coords.Item1, coords.Item2] == '[')
+                        box = Boxes.First(b => b.Coords == coords);
+
+                    else if (Map[coords.Item1, coords.Item2] == ']')
+                        box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2 - 1));
+
+                    if (box != null)
+                    {
+                        if (CanMove(box, dir))
+                        {
+                            box.Move(dir);
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+
+                else if(movable is Box)
+                {
+                    List<Box> boxes = [];
+
+                    if (Map[coords.Item1, coords.Item2] == '[')
+                    {
+                        Box box = Boxes.First(b => b.Coords == coords);
+                        if (box != null)
+                            boxes.Add(box);
+                    }
+
+                    if (Map[coords.Item1, coords.Item2] == ']')
+                    {
+                        Box box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2 - 1));
+                        if (box != null)
+                            boxes.Add(box);
+                    }
+
+                    if (Map[coords.Item1, coords.Item2 + 1] == '[')
+                    {
+                        Box box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2 + 1));
+                        if (box != null)
+                            boxes.Add(box);
+                    }
+
+                    if (Map[coords.Item1, coords.Item2 + 1] == ']')
+                    {
+                        Box box = Boxes.First(b => b.Coords == (coords.Item1, coords.Item2));
+                        if (box != null)
+                            boxes.Add(box);
+                    }
+
+                    if (boxes.Count > 0)
+                    {
+                        bool canMove = true;
+                        foreach (Box box in boxes)
+                        {
+                            if (!CanMove(box, dir))
+                            {
+                                canMove = false;
+                                break;
+                            }
+                        }
+
+                        if(canMove)
+                        {
+                            foreach (Box box in boxes)
+                                box.Move(dir);
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+
             }
             return true;
         }
@@ -96,34 +193,36 @@
 
             for (int y = 0; y < data.Length; y++)
             {
-                for (int x = 0; x < data[y].Length; x += 2)
+                for (int x = 0; x < data[0].Length; x++)
                 {
                     char input = data[y][x];
 
+                    int newX = x * 2;
+
                     if (input == '@')
                     {
-                        Robot.Coords = (y, x);
-                        map[y, x] = '@';
-                        map[y, x + 1] = '.';
+                        Robot.Coords = (y, newX);
+                        map[y, newX] = '@';
+                        map[y, newX + 1] = '.';
                     }
 
                     else if (input == 'O')
                     {
-                        Boxes.Add(new Box((y, x)));
-                        map[y, x] = '[';
-                        map[y , x + 1] = ']';
+                        Boxes.Add(new Box((y, newX)));
+                        map[y, newX] = '[';
+                        map[y, newX + 1] = ']';
                     }
 
                     else if (input == '#')
                     {
-                        map[y, x] = '#';
-                        map[y, x + 1] = '#';
+                        map[y, newX] = '#';
+                        map[y, newX + 1] = '#';
                     }
 
                     else if (input == '.')
                     {
-                        map[y, x] = '.';
-                        map[y, x + 1] = '.';
+                        map[y, newX] = '.';
+                        map[y, newX + 1] = '.';
                     }
                 }
             }
