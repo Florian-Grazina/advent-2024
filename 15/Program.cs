@@ -9,3 +9,5 @@ Robot robot = new (commands);
 
 MapHolder mapHolder = new (map, robot);
 Console.WriteLine(mapHolder.Run());
+
+// 1484199 -- too low

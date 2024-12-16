@@ -5,10 +5,12 @@
         public char[,] Map { get; set; }
         public Robot Robot { get; set; }
         public List<Box> Boxes { get; set; }
+        public Dictionary<(int, int), Box> BoxesToMove { get; set; }
 
         public MapHolder(string data, Robot robot)
         {
             Boxes = [];
+            BoxesToMove = [];
             Robot = robot;
             Map = ParseData(data.Split("\r\n"));
             Print();
@@ -23,14 +25,22 @@
 
                 Direction direction = Robot.Directions.Pop();
                 if (CanMove(Robot, direction))
+                {
+                    foreach (var item in BoxesToMove.Values)
+                        item.Move(direction);
+                    BoxesToMove.Clear();
+
                     Robot.Move(direction);
+                }
 
                 UpdateMap();
+
                 //Print();
                 Console.WriteLine(index);
                 //Console.WriteLine(direction);
             }
 
+            Print();
             return Boxes.Sum(b => b.GetGpsCoords);
         }
 
@@ -177,7 +187,7 @@
                         if (canMove)
                         {
                             foreach (Box box in boxes)
-                                box.Move(dir);
+                                BoxesToMove.TryAdd(box.Coords, box);
                             return true;
                         }
                         return false;
