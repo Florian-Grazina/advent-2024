@@ -17,14 +17,15 @@
             }
         }
 
-        public decimal GetTotalPrice()
+        public long GetTotalPrice()
         {
-            decimal result = 0;
+            long result = 0;
 
             foreach(var command in Commands)
             {
-                (decimal A, decimal B) = command.GetNumberOfClicks();
-                result += (A * TokenA) + (B * TokenB);
+                (long A, long B) = command.GetNumberOfClicks();
+                long temp = (A * TokenA) + (B * TokenB);
+                result += temp;
             }
 
             return result;

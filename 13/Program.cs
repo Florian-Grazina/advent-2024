@@ -10,6 +10,8 @@ decimal result = commandHolder.GetTotalPrice();
 
 Console.WriteLine(result);
 
-// 34093 high
-31623
-// 14570 low
+// 124701495431420430
+// 95329548166047
+
+// 93209116744825 -- correct
+// 93209116744803

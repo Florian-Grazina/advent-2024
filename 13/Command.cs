@@ -6,34 +6,31 @@ namespace _13
     internal class Command
     {
         public decimal PrizeX { get; set; }
-        public decimal PrizeY {get; set;}
+        public decimal PrizeY { get; set; }
 
-        public decimal AX {get; set;}
-        public decimal BX {get; set;}
+        public decimal AX { get; set; }
+        public decimal BX { get; set; }
 
-        public decimal AY {get; set;}
-        public decimal BY {get; set;}
+        public decimal AY { get; set; }
+        public decimal BY { get; set; }
 
         public Command(string data)
         {
             ParseData(data);
         }
 
-        public (decimal, decimal) GetNumberOfClicks()
+        public (long, long) GetNumberOfClicks()
         {
             decimal A = (PrizeX * BY - PrizeY * BX) / ((AX * BY) - (AY * BX));
             decimal B = PrizeY / BY - (AY / BY * A);
 
-            if (A > 100 || B > 100)
+            //if (A < 0 || B < 0)
+            //    return (0, 0);
+
+            if (!Test((long)Math.Round(A), (long)Math.Round(B)))
                 return (0, 0);
 
-            else if (A < 0 || B < 0)
-                return (0, 0);
-
-            else if(!IsDecimalWhole(A) && !IsDecimalWhole(B))
-                return (0, 0);
-
-            return (A, B);
+            return ((long)Math.Round(A), (long)Math.Round(B));
         }
 
         private void ParseData(string data)
@@ -45,14 +42,20 @@ namespace _13
             AY = decimal.Parse(matchCollection[1].Value);
             BX = decimal.Parse(matchCollection[2].Value);
             BY = decimal.Parse(matchCollection[3].Value);
-            PrizeX = decimal.Parse(matchCollection[4].Value);
-            PrizeY = decimal.Parse(matchCollection[5].Value);
+            PrizeX = decimal.Parse(matchCollection[4].Value) + 10000000000000;
+            PrizeY = decimal.Parse(matchCollection[5].Value) + 10000000000000;
+            //PrizeX = decimal.Parse(matchCollection[4].Value);
+            //PrizeY = decimal.Parse(matchCollection[5].Value);
         }
 
-        bool IsDecimalWhole(decimal value)
+        private bool Test(decimal a, decimal b)
         {
-            return value % 1 == 0;
-        }
+            if (a * AX + b * BX != PrizeX)
+                return false;
+            if (a * AY + b * BY != PrizeY)
+                return false;
 
+            return true;
+        }
     }
 }
