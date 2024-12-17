@@ -37,6 +37,7 @@ namespace _16
             {
                 if (Score > value)
                     return;
+
                 else
                     Database.History[coords] = Score;
             } 
@@ -47,7 +48,7 @@ namespace _16
             {
                 //Print(map);
                 Console.WriteLine(Score);
-                Database.SetBestScore(Score);
+                Database.SetBestScore(Score, Path);
                 return;
             }
 
