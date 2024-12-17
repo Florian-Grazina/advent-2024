@@ -18,11 +18,9 @@
 
         public int Run()
         {
-            int index = 0;
             while (Robot.Directions.Count > 0)
             {
-                index++;
-
+                Console.WriteLine(Robot.Directions.Count);
                 Direction direction = Robot.Directions.Pop();
                 if (CanMove(Robot, direction))
                 {
@@ -36,7 +34,6 @@
                 UpdateMap();
 
                 //Print();
-                Console.WriteLine(index);
                 //Console.WriteLine(direction);
             }
 
@@ -235,6 +232,27 @@
                         map[y, newX] = '.';
                         map[y, newX + 1] = '.';
                     }
+                }
+            }
+            return map;
+        }
+
+        private char[,] ParseDataV2(string[] data)
+        {
+            char[,] map = new char[data.Length, data[0].Length];
+
+            for (int y = 0; y < data.Length; y++)
+            {
+                for (int x = 0; x < data[0].Length; x++)
+                {
+                    char input = data[y][x];
+                    map[y, x] = input;
+
+                    if (input == '@')
+                        Robot.Coords = (y, x);
+
+                    else if (input == '[')
+                        Boxes.Add(new Box((y, x)));
                 }
             }
             return map;
