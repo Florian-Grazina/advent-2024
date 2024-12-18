@@ -1,4 +1,5 @@
 ﻿
+
 namespace _18
 {
     internal class MapHolder
@@ -19,8 +20,8 @@ namespace _18
             Bytes = [];
             Map = new char[Range + 1, Range + 1];
 
-            for (int i = 0; i < NbOfDrop; i++)
-                Bytes.Add(new ByteMem(data[i]));
+            foreach(string input in data)
+                Bytes.Add(new ByteMem(input));
 
             GenerateMap();
             Print();
@@ -33,8 +34,8 @@ namespace _18
                 for (int x = 0; x < Range + 1; x++)
                     Map[y, x] = '.';
 
-            foreach (ByteMem bit in Bytes)
-                Map[bit.Y, bit.X] = '#';
+            for (int i = 0; i < NbOfDrop; i++)
+                Map[Bytes[i].Y, Bytes[i].X] = '#';
         }
 
         private void Print()
@@ -49,7 +50,32 @@ namespace _18
             Console.WriteLine("--------------------");
         }
 
-        public int FindPath()
+
+        internal (int, int) FindBlockCoord()
+        {
+            int index = 0;
+            foreach (ByteMem bit in Bytes)
+            {
+                index++;
+                Console.WriteLine($"Testing bit n '{index}' / {Bytes.Count}");
+
+                if (Map[bit.Y, bit.X] == '#')
+                    continue;
+                else
+                {
+                    Map[bit.Y, bit.X] = '#';
+
+                    if (IsBlocked())
+                        return (bit.Y, bit.X);
+                    else
+                        GenerateMap();
+                }
+            }
+            throw new Exception("No block found.");
+        }
+
+
+        public bool IsBlocked()
         {
             HashSet<(int, int)> pathsStart = [Start];
             HashSet<(int, int)> pathsEnd = [End];
@@ -73,7 +99,10 @@ namespace _18
                     LookAround(path, 'E').ForEach(p => availablePathsEnd.Add(p));
                 }
 
-                score+=2;
+                if (availablePathsStart.Count == 0)
+                    return true;
+
+                score += 2;
 
                 pathsEnd.Clear();
                 foreach ((int, int) path in availablePathsEnd)
@@ -85,7 +114,7 @@ namespace _18
                 foreach ((int, int) path in availablePathsStart)
                 {
                     if (pathsEnd.Contains(path))
-                        return score;
+                        return false;
                     pathsStart.Add(path);
                 }
             }
