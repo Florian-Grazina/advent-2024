@@ -1,6 +1,4 @@
-﻿
-
-namespace _18
+﻿namespace _18
 {
     internal class MapHolder
     {
@@ -20,11 +18,11 @@ namespace _18
             Bytes = [];
             Map = new char[Range + 1, Range + 1];
 
-            foreach(string input in data)
+            foreach (string input in data)
                 Bytes.Add(new ByteMem(input));
 
             GenerateMap();
-            Print();
+            Print(Map);
         }
 
         #region private methods
@@ -34,17 +32,17 @@ namespace _18
                 for (int x = 0; x < Range + 1; x++)
                     Map[y, x] = '.';
 
-            for (int i = 0; i < NbOfDrop; i++)
-                Map[Bytes[i].Y, Bytes[i].X] = '#';
+            foreach (ByteMem bit in Bytes)
+                Map[bit.Y, bit.X] = '#';
         }
 
-        private void Print()
+        private void Print(char[,] map)
         {
             Console.WriteLine("--------------------");
             for (int y = 0; y < Range + 1; y++)
             {
                 for (int x = 0; x < Range + 1; x++)
-                    Console.Write(Map[y, x]);
+                    Console.Write(map[y, x]);
                 Console.WriteLine();
             }
             Console.WriteLine("--------------------");
@@ -53,29 +51,24 @@ namespace _18
 
         internal (int, int) FindBlockCoord()
         {
+            Bytes.Reverse();
+
             int index = 0;
             foreach (ByteMem bit in Bytes)
             {
                 index++;
                 Console.WriteLine($"Testing bit n '{index}' / {Bytes.Count}");
 
-                if (Map[bit.Y, bit.X] == '#')
-                    continue;
-                else
-                {
-                    Map[bit.Y, bit.X] = '#';
-                        
-                    if (IsBlocked())
-                        return (bit.Y, bit.X);
-                    else
-                        GenerateMap();
-                }
+                Map[bit.Y, bit.X] = '.';
+
+                if (!IsBlocked(CopyCharArray(Map)))
+                    return bit.Coords;
             }
             throw new Exception("No block found.");
         }
 
 
-        public bool IsBlocked()
+        public bool IsBlocked(char[,] map)
         {
             HashSet<(int, int)> pathsStart = [Start];
             HashSet<(int, int)> pathsEnd = [End];
@@ -89,14 +82,14 @@ namespace _18
 
                 foreach ((int, int) path in pathsStart)
                 {
-                    Map[path.Item1, path.Item2] = 'S';
-                    LookAround(path, 'S').ForEach(p => availablePathsStart.Add(p));
+                    map[path.Item1, path.Item2] = 'S';
+                    LookAround(path, 'S', map).ForEach(p => availablePathsStart.Add(p));
                 }
 
                 foreach ((int, int) path in pathsEnd)
                 {
-                    Map[path.Item1, path.Item2] = 'E';
-                    LookAround(path, 'E').ForEach(p => availablePathsEnd.Add(p));
+                    map[path.Item1, path.Item2] = 'E';
+                    LookAround(path, 'E', map).ForEach(p => availablePathsEnd.Add(p));
                 }
 
                 if (availablePathsStart.Count == 0)
@@ -120,14 +113,14 @@ namespace _18
             }
         }
 
-        private List<(int, int)> LookAround((int, int) coords, char obstacle)
+        private List<(int, int)> LookAround((int, int) coords, char obstacle, char[,] map)
         {
             List<(int, int)> availablePaths = [];
 
             // look left
             try
             {
-                if (Map[coords.Item1, coords.Item2 - 1] != '#' && Map[coords.Item1, coords.Item2 - 1] != obstacle)
+                if (map[coords.Item1, coords.Item2 - 1] != '#' && map[coords.Item1, coords.Item2 - 1] != obstacle)
                     availablePaths.Add((coords.Item1, coords.Item2 - 1));
 
             }
@@ -136,7 +129,7 @@ namespace _18
             // look right
             try
             {
-                if (Map[coords.Item1, coords.Item2 + 1] != '#' && Map[coords.Item1, coords.Item2 + 1] != obstacle)
+                if (map[coords.Item1, coords.Item2 + 1] != '#' && map[coords.Item1, coords.Item2 + 1] != obstacle)
                     availablePaths.Add((coords.Item1, coords.Item2 + 1));
 
             }
@@ -149,7 +142,7 @@ namespace _18
             try
             {
 
-                if (Map[coords.Item1 - 1, coords.Item2] != '#' && Map[coords.Item1 - 1, coords.Item2] != obstacle)
+                if (map[coords.Item1 - 1, coords.Item2] != '#' && map[coords.Item1 - 1, coords.Item2] != obstacle)
                     availablePaths.Add((coords.Item1 - 1, coords.Item2));
             }
             catch
@@ -161,7 +154,7 @@ namespace _18
             try
             {
 
-                if (Map[coords.Item1 + 1, coords.Item2] != '#' && Map[coords.Item1 + 1, coords.Item2] != obstacle)
+                if (map[coords.Item1 + 1, coords.Item2] != '#' && map[coords.Item1 + 1, coords.Item2] != obstacle)
                     availablePaths.Add((coords.Item1 + 1, coords.Item2));
             }
             catch
@@ -172,6 +165,18 @@ namespace _18
             return availablePaths;
         }
 
+        public char[,] CopyCharArray(char[,] source)
+        {
+            int rows = source.GetLength(0);
+            int cols = source.GetLength(1);
+            char[,] copy = new char[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    copy[i, j] = source[i, j];
+
+            return copy;
+        }
         #endregion
     }
 }
