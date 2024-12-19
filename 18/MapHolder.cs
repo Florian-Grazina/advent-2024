@@ -64,7 +64,7 @@ namespace _18
                 else
                 {
                     Map[bit.Y, bit.X] = '#';
-
+                        
                     if (IsBlocked())
                         return (bit.Y, bit.X);
                     else
