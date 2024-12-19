@@ -7,7 +7,8 @@
         public Robot(string data)
         {
             Directions = [];
-            ParseData(data.Replace("\r\n", null));
+            string moves = data.Replace("\r\n", null);
+            ParseData(moves);
         }
 
         private void ParseData(string data)

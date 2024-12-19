@@ -11,7 +11,7 @@ namespace _16
         {
             Map = new char[data.Length, data[0].Length];
             (int, int) reindeerPos = ParseData(data);
-            Reindeer = new(reindeerPos, Direction.RIGHT, Map, []);
+            Reindeer = new(reindeerPos, Direction.RIGHT, Map, new HashSet<(int, int)>());
         }
 
         #region public methods
