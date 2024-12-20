@@ -94,7 +94,6 @@ namespace _17
         {
             int value = GetCombo() % 8;
             Register.Outputs.Add(value);
-            Console.WriteLine(value);
             return 99;
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace _17
+﻿using System.Reflection;
+
+namespace _17
 {
     internal class Computer
     {
@@ -23,13 +25,16 @@
                 OpeCode opeCode = GetOpeCode(id, operand);
                 short offset = opeCode.Execute();
 
-                if(offset == 99)
+                if(opeCode is Out)
+                    if (AreListsEqualFast(Register.Outputs, Register.ListRef))
+                        break;
+
+                if (offset == 99)
                     i += 2;
                 else
                     i = offset;
             }
         }
-
 
         private OpeCode GetOpeCode(short id, short operand)
         {
@@ -45,6 +50,19 @@
                 7 => new Cdv(operand),
                 _ => throw new Exception("Invalid OpCode"),
             };
+        }
+
+        private bool AreListsEqualFast(IList<int> list1, IList<int> list2)
+        {
+            if (list1 == null || list2 == null || list1.Count != list2.Count) return false;
+
+            for (int i = 0; i < list1.Count; i++)
+            {
+                if (list1[i] != list2[i])
+                    return false;
+            }
+
+            return true;
         }
     }
 }
