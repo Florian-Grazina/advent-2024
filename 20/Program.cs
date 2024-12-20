@@ -11,6 +11,7 @@ foreach (IGrouping<int, int> group in ok)
     Console.WriteLine($"{group.Count()} cheats that saves {group.Key} picoseconds");
 }
 
-Console.WriteLine(mapHolder.Cheats.Where(c => c.Score > 100).Count());
+Console.WriteLine(mapHolder.Cheats.Where(c => c.Score >= 100).Count());
 
 // 422708
+// 982124

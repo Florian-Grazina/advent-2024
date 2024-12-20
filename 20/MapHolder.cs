@@ -42,12 +42,14 @@
 
         private void GenerateDirections()
         {
-            int maxRange = 10;
+            int maxRange = 20;
             for (int y = -maxRange; y <= maxRange; y++)
             {
                 for (int x = -maxRange; x <= maxRange; x++)
                 {
                     if (y == 0 && x == 0) // Skip the origin point
+                        continue;
+                    if(Math.Abs(y) + Math.Abs(x) > maxRange)
                         continue;
 
                     Directions.Add((y, x));
@@ -71,7 +73,7 @@
         {
             foreach (KeyValuePair<(int, int), int> entry in Visited)
             {
-                if(entry.Key == (7,9))
+                if(entry.Key == (7,7))
                     Console.WriteLine();
 
                 List<int> highScores = GetHigherScores(entry.Key);
