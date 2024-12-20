@@ -6,14 +6,14 @@ namespace _16
     internal class Reindeer
     {
         public Direction Direction { get; set; }
-        public HashSet<(int, int)> Path { get; set; }
+        public Dictionary<(int, int), Direction> Path { get; set; }
         public (int, int) Coords { get; set; }
         public int Score { get; set; }
         public char[,] Map { get; set; }
         public int Y => Coords.Item1;
         public int X => Coords.Item2;
 
-        public Reindeer((int, int) coords, Direction dir, char[,] map, HashSet<(int, int)> path, int score)
+        public Reindeer((int, int) coords, Direction dir, char[,] map, HashSet<(int, int)> path)
         {
             Score = score;
             Coords = coords;
@@ -56,7 +56,7 @@ namespace _16
                 return;
 
             map[coords.Item1, coords.Item2] = '#';
-            Path.Add(coords);
+            Path.Add(coords, direction);
 
             Score++;
 
@@ -67,14 +67,10 @@ namespace _16
 
             foreach (var path in availablePaths.Skip(1))
             {
-                int newScore = Score;
+                long newScore = GetNewScore(coords, path, direction);
 
-                Direction newDir = GetDirection(coords, path);
-                if (newDir != direction)
-                    newScore += 1000;
-
-                Reindeer newRein = new(path, newDir, map, Path, newScore);
-                newRein.Run();
+                Reindeer newRein = new(path, direction, map, Path);
+                    newRein.Run();
             }
 
             (int, int) pathz = availablePaths.First();
@@ -114,15 +110,31 @@ namespace _16
             return availablePaths;
         }
 
-        private Direction GetDirection((int y, int x) from, (int y, int x) to)
+        private long GetNewScore((int, int) oldCoords, (int, int) newCoords, Direction direction)
         {
-            int dx = to.x - from.x;
-            int dy = to.y - from.y;
+            int score = 0;
+            int dy = newCoords.Item1 - oldCoords.Item1;
+            int dx = newCoords.Item2 - oldCoords.Item2;
 
-            if (dx == 0 && dy < 0) return Direction.UP;
-            if (dx == 0 && dy > 0) return Direction.DOWN;
-            if (dy == 0 && dx > 0) return Direction.RIGHT;
-            if (dy == 0 && dx < 0) return Direction.LEFT;
+            Direction newDirection = Direction.NONE;
+
+            if (dx == 0 && dy > 0) newDirection = Direction.UP;
+            if (dx == 0 && dy < 0) newDirection = Direction.DOWN;
+            if (dy == 0 && dx > 0) newDirection = Direction.RIGHT;
+            if (dy == 0 && dx < 0) newDirection = Direction.LEFT;
+
+            int angle = Math.Abs((int)newDirection - (int)direction);
+
+            if (direction == Direction.UP || newDirection == Direction.UP)
+            {
+                if (direction == Direction.UP && newDirection == Direction.RIGHT ||
+                    direction == Direction.UP && newDirection == Direction.LEFT ||
+                    newDirection == Direction.UP && direction == Direction.RIGHT ||
+                    newDirection == Direction.UP && direction == Direction.RIGHT)
+                    angle = 90;
+            }
+
+            int numberOfTurns = angle / 90;
 
             throw new ArgumentException("Points do not align with a single cardinal direction.");
         }
