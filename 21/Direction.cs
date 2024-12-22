@@ -3,6 +3,9 @@
     internal enum Direction
     {
         UP,
-        DOWN, LEFT, RIGHT
+        DOWN,
+        LEFT,
+        RIGHT,
+        PRESS
     }
 }
