@@ -3,9 +3,9 @@ namespace _22
 {
     internal class SecretCalculator
     {
-        public uint GetSecretNumber(uint startingNumber, int numberOfDays)
+        public long GetSecretNumber(long startingNumber, int numberOfDays)
         {
-            uint secretNumber = startingNumber;
+            long secretNumber = startingNumber;
             for (int i = 0; i < numberOfDays; i++)
             {
                 secretNumber = Step1(secretNumber);
@@ -17,39 +17,40 @@ namespace _22
             return secretNumber;
         }
 
-        private uint Step1(uint secretNumber)
+        private long Step1(long secretNumber)
         {
-            uint result = secretNumber * 64;
+            long result = secretNumber * 64;
             secretNumber = Mix(secretNumber, result);
             secretNumber = Prune(secretNumber);
             return secretNumber;
         }
 
-        private uint Step2(uint secretNumber)
+        private long Step2(long secretNumber)
         {
-            uint result = (uint)Math.Floor(secretNumber / 32d);
+            long result = (long)Math.Floor(secretNumber / 32f);
+
             secretNumber = Mix(secretNumber, result);
             secretNumber = Prune(secretNumber);
             return secretNumber;
         }
 
-        private uint Step3(uint secretNumber)
+        private long Step3(long secretNumber)
         {
-            uint result = secretNumber * 2048;
+            long result = secretNumber * 2048;
             secretNumber = Mix(secretNumber, result);
             secretNumber = Prune(secretNumber);
             return secretNumber;
         }
 
-        private uint Mix(uint secretNumber, uint number)
+        private long Mix(long secretNumber, long number)
         {
             var ok = secretNumber ^ number;
             return ok;
         }
 
-        private uint Prune(uint secretNumber)
+        private long Prune(long secretNumber)
         {
-            uint ok = secretNumber % 16777216;
+            long ok = secretNumber % 16777216;
             return ok;
         }
     }

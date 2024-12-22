@@ -3,11 +3,11 @@ using _22;
 var input = File.ReadAllLines("../../../input.txt");
 
 SecretCalculator calculator = new();
-uint result = 0;
+long result = 0;
 
 foreach(string data in input)
 {
-    result += calculator.GetSecretNumber(uint.Parse(data), 2000);
+    result += calculator.GetSecretNumber(int.Parse(data), 2000);
 }
 
 Console.WriteLine(result);
