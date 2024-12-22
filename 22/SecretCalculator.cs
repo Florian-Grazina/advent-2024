@@ -3,18 +3,35 @@ namespace _22
 {
     internal class SecretCalculator
     {
-        public long GetSecretNumber(long startingNumber, int numberOfDays)
+        private Dictionary<Tuple<int, int, int, int>, int> dico;
+
+        public Dictionary<Tuple<int, int, int, int>, int> GetNumberOfBananas(long startingNumber, int numberOfDays)
         {
+            dico = [];
+            List<int> sequence = [];
             long secretNumber = startingNumber;
+            int lastBanana = (int)(secretNumber % 10);
+
             for (int i = 0; i < numberOfDays; i++)
             {
                 secretNumber = Step1(secretNumber);
                 secretNumber = Step2(secretNumber);
                 secretNumber = Step3(secretNumber);
+
+                sequence.Add((int)(secretNumber % 10) - lastBanana);
+                if (sequence.Count > 4)
+                    sequence.RemoveAt(0);
+
+                lastBanana = (int)(secretNumber % 10);
+
+                if(i < 4)
+                    continue;
+
+                var sequenceKey = Tuple.Create(sequence[0], sequence[1], sequence[2], sequence[3]);
+                dico.TryAdd(sequenceKey, lastBanana);
             }
 
-            Console.WriteLine(secretNumber);
-            return secretNumber;
+            return dico;
         }
 
         private long Step1(long secretNumber)
