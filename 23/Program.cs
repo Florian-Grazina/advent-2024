@@ -25,22 +25,36 @@ foreach (var data in input)
     comp2.LinkTo(comp1);
 }
 
-List<Computer> computersIdT = computers.Where(c => c.Key.Contains('t')).Select(c => c.Value).ToList();
+int highScore = 0;
+Computer highScoreComp = null;
 
-HashSet<string> groupsOf3 = [];
-
-
-foreach (Computer comp in computersIdT)
+foreach (Computer comp in computers.Values)
 {
-    foreach (string ids in comp.GetGroupCount())
+    if(comp.Lan.Count > highScore)
     {
-        if (groupsOf3.Contains(ids))
-            continue;
-
-        groupsOf3.Add(ids);
+        highScore = comp.Lan.Count;
+        highScoreComp = comp;
     }
 }
 
-Console.WriteLine(groupsOf3.Count);
+Console.WriteLine();
 
-// 2400 high
+//List<Computer> computersIdT = computers.Where(c => c.Key.Contains('t')).Select(c => c.Value).ToList();
+
+//HashSet<string> groupsOf3 = [];
+
+
+//foreach (Computer comp in computersIdT)
+//{
+//    foreach (string ids in comp.GetGroupCount())
+//    {
+//        if (groupsOf3.Contains(ids))
+//            continue;
+
+//        groupsOf3.Add(ids);
+//    }
+//}
+
+//Console.WriteLine(groupsOf3.Count);
+
+//// 2400 high

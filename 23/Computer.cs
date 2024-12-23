@@ -6,10 +6,14 @@ namespace _23
         public string Id { get; set; }
         public List<Computer> Lan { get; set; }
 
+        public List<string> LinkedComputers { get; set; }
+
+
         public Computer(string id)
         {
             Id = id;
             Lan = [];
+            LinkedComputers = Lan.Select(c => c.Id).ToList();
         }
 
         public void LinkTo(Computer computer)
@@ -35,8 +39,8 @@ namespace _23
                     Computer comp1 = Lan[i];
                     Computer comp2 = Lan[j];
 
-                    if(comp1.IsLinkedTo(comp2))
-                        groupsOf3.Add(CreateGroupOf3(Id, comp1.Id, comp2.Id));
+                    if(!comp1.IsLinkedTo(comp2))
+
                 }
             }
 
