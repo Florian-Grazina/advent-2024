@@ -25,16 +25,13 @@ foreach (var data in input)
     comp2.LinkTo(comp1);
 }
 
-int highScore = 0;
-Computer highScoreComp = null;
+List<string> highScoreComp = [];
 
 foreach (Computer comp in computers.Values)
 {
-    if(comp.Lan.Count > highScore)
-    {
-        highScore = comp.Lan.Count;
-        highScoreComp = comp;
-    }
+    List<string> group = comp.GetGroup();
+    if (group.Count > highScoreComp.Count)
+        highScoreComp = group;
 }
 
 Console.WriteLine();

@@ -6,14 +6,11 @@ namespace _23
         public string Id { get; set; }
         public List<Computer> Lan { get; set; }
 
-        public List<string> LinkedComputers { get; set; }
-
 
         public Computer(string id)
         {
             Id = id;
             Lan = [];
-            LinkedComputers = Lan.Select(c => c.Id).ToList();
         }
 
         public void LinkTo(Computer computer)
@@ -23,29 +20,32 @@ namespace _23
 
         public bool IsLinkedTo(Computer computer)
         {
+            if (computer == this)
+                return true;
+
             bool isLinked = Lan.Contains(computer);
             return isLinked;
         }
 
-        public List<string> GetGroupCount()
+        public List<string> GetGroup()
         {
-            List<string> groupsOf3 = [];
+            List<List<string>> allGroups = [];
 
-            for(int i = 0; i < Lan.Count; i++)
-            {
-                for(int j = i; j < Lan.Count; j++)
-                {
-                    if(i == j) continue;
-                    Computer comp1 = Lan[i];
-                    Computer comp2 = Lan[j];
+            foreach(Computer computer in Lan)
+                allGroups.Add(computer.GetLinkedGroup(Lan));
 
-                    if(!comp1.IsLinkedTo(comp2))
-
-                }
-            }
-
-            return groupsOf3;
+            List<string> intersectGroups = allGroups.Aggregate((current, next) => current.Intersect(next).ToList());
+            return intersectGroups;
         }
+
+        public List<string> GetLinkedGroup(List<Computer> computers)
+        {
+            List<Computer> group = computers.Where(c => c.IsLinkedTo(this)).ToList();
+            var ok = group.Select(c => c.Id).ToList();
+            ok.Sort();
+            return ok;
+        }
+
 
         private string CreateGroupOf3(string id1, string id2, string id3)
         {
