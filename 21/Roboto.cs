@@ -83,10 +83,10 @@
 
             directions.Add(Press());
 
-            if (isKeyPad)
-                directions = [.. directions.OrderBy(d => d != '>' && d != '^')];
-            else
-                directions = [.. directions.OrderBy(d => d != '>' && d != 'v')];
+            //if (isKeyPad)
+            //    directions = [.. directions.OrderBy(d => d != '>' && d != '^')];
+            //else
+            //    directions = [.. directions.OrderBy(d => d != '>' && d != 'v')];
 
             ReplacePattern(directions);
 

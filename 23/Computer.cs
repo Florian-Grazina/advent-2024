@@ -1,57 +1,65 @@
-﻿
-namespace _23
+﻿namespace _23
 {
     internal class Computer
     {
         public string Id { get; set; }
         public List<Computer> Lan { get; set; }
-
-
         public Computer(string id)
         {
             Id = id;
             Lan = [];
         }
-
         public void LinkTo(Computer computer)
         {
             Lan.Add(computer);
         }
-
         public bool IsLinkedTo(Computer computer)
         {
-            if (computer == this)
-                return true;
-
             bool isLinked = Lan.Contains(computer);
             return isLinked;
         }
-
-        public List<string> GetGroup()
+        public List<string> GetGroups()
         {
-            List<List<string>> allGroups = [];
+            List<List<Computer>> groupsOf3 = [];
+            for(int i = 0; i < Lan.Count; i++)
+            {
+                for(int j = i; j < Lan.Count; j++)
+                {
+                    if(i == j) continue;
+                    Computer comp1 = Lan[i];
+                    Computer comp2 = Lan[j];
+                    if(comp1.IsLinkedTo(comp2))
+                        groupsOf3.Add(CreateGroupOf3(this, comp1, comp2));
+                }
+            }
 
-            foreach(Computer computer in Lan)
-                allGroups.Add(computer.GetLinkedGroup(Lan));
+            foreach(List<Computer> group in groupsOf3)
+            {
+                foreach(Computer comp in Lan)
+                {
+                    if(group.Contains(comp))
+                        continue;
 
-            List<string> intersectGroups = allGroups.Aggregate((current, next) => current.Intersect(next).ToList());
-            return intersectGroups;
-        }
+                    if(group.All(group => group.IsLinkedTo(comp)))
+                        group.Add(comp);
+                }
+            }
 
-        public List<string> GetLinkedGroup(List<Computer> computers)
-        {
-            List<Computer> group = computers.Where(c => c.IsLinkedTo(this)).ToList();
-            var ok = group.Select(c => c.Id).ToList();
-            ok.Sort();
+            var ok = groupsOf3.Select(CreateId).ToList();
             return ok;
         }
 
-
-        private string CreateGroupOf3(string id1, string id2, string id3)
+        private List<Computer> CreateGroupOf3(Computer id1, Computer id2, Computer id3)
         {
-            var group = new List<string> { id1, id2, id3 };
+            var group = new List<Computer> { id1, id2, id3 };
+            return group;
+        }
+
+        private string CreateId(List<Computer> comps)
+        {
+            var group = comps.Select(c => c.Id).ToList();
             group.Sort();
-            string ids = string.Join('-', group);
+            string ids = string.Join(',', group);
             return ids;
         }
     }

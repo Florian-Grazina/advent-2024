@@ -25,33 +25,19 @@ foreach (var data in input)
     comp2.LinkTo(comp1);
 }
 
-List<string> highScoreComp = [];
+
+string highestId = "";
 
 foreach (Computer comp in computers.Values)
 {
-    List<string> group = comp.GetGroup();
-    if (group.Count > highScoreComp.Count)
-        highScoreComp = group;
+    foreach (string ids in comp.GetGroups())
+    {
+        if (ids.Length > highestId.Length)
+            highestId = ids;
+    }
 }
 
-Console.WriteLine();
 
-//List<Computer> computersIdT = computers.Where(c => c.Key.Contains('t')).Select(c => c.Value).ToList();
+Console.WriteLine(highestId);
 
-//HashSet<string> groupsOf3 = [];
-
-
-//foreach (Computer comp in computersIdT)
-//{
-//    foreach (string ids in comp.GetGroupCount())
-//    {
-//        if (groupsOf3.Contains(ids))
-//            continue;
-
-//        groupsOf3.Add(ids);
-//    }
-//}
-
-//Console.WriteLine(groupsOf3.Count);
-
-//// 2400 high
+// hl - io - ku - pk - ps - qq - sh - tx - ty - wq - xi - xj - yp
