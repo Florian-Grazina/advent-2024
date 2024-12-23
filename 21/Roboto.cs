@@ -1,83 +1,59 @@
-﻿
-
-namespace _21
+﻿namespace _21
 {
     internal class Roboto : IControllable
     {
         public (int, int) ArmCoords { get; set; }
-        public Dictionary<char, (int, int)> Map { get; set; }
 
-        public List<List<char>> Outputs = [];
 
-        public Roboto(string[] data)
+        public List<char> GetInput(Dictionary<char, (int, int)> map, List<char> output, bool isKeyPad)
         {
-            foreach(string input in data)
-                Outputs.Add(GetList(input));
+            ArmCoords = map['A'];
 
-            Map = GenerateMap();
-            ArmCoords = Map['A'];
-        }
+            List<char> input = [];
 
-        public List<Direction> GetInput()
-        {
-            List<Direction> input = [];
-
-            foreach(List<char> ouput in Outputs)
-            {
-                foreach (char data in ouput)
-                    input.AddRange(GetDirectionsByCoords(Map[data]));
-            }
+            foreach (char data in output)
+                input.AddRange(GetDirectionsByCoords(map[data], isKeyPad));
 
             return input;
         }
-
-        private List<char> GetList(string input)
-        {
-            List<char> list = [];
-
-            foreach (char c in input)
-                list.Add(c);
-            return list;
-        }
-
-        public Direction MoveDown()
+     
+        public char MoveDown()
         {
             ArmCoords = (ArmCoords.Item1 + 1, ArmCoords.Item2);
-            return Direction.DOWN;
+            return 'v';
         }
 
-        public Direction MoveLeft()
+        public char MoveLeft()
         {
             ArmCoords = (ArmCoords.Item1, ArmCoords.Item2 - 1);
-            return Direction.LEFT;
+            return '<';
         }
 
-        public Direction MoveRight()
+        public char MoveRight()
         {
             ArmCoords = (ArmCoords.Item1, ArmCoords.Item2 + 1);
-            return Direction.RIGHT;
+            return '>';
         }
 
-        public Direction MoveUp()
+        public char MoveUp()
         {
             ArmCoords = (ArmCoords.Item1 - 1, ArmCoords.Item2);
-            return Direction.UP;
+            return '^';
         }
 
-        public Direction Press()
+        public char Press()
         {
-            return Direction.PRESS;
+            return 'A';
         }
 
-
-        private List<Direction> GetDirectionsByCoords((int, int) value)
+        private List<char> GetDirectionsByCoords((int, int) value, bool isKeyPad)
         {
-            List<Direction> directions = [];
+            List<char> directions = [];
 
             int deltaY = value.Item1 - ArmCoords.Item1;
             int deltaX = value.Item2 - ArmCoords.Item2;
 
-            while(deltaX != 0)
+            while (deltaX != 0)
             {
                 if (deltaX > 0)
                 {
@@ -106,32 +82,35 @@ namespace _21
             }
 
             directions.Add(Press());
-            directions = [.. directions.OrderBy(d => d != Direction.RIGHT && d != Direction.UP)];
+
+            if (isKeyPad)
+                directions = [.. directions.OrderBy(d => d != '>' && d != '^')];
+            else
+                directions = [.. directions.OrderBy(d => d != '>' && d != 'v')];
+
+            ReplacePattern(directions);
 
             return directions;
         }
 
-
-        private Dictionary<char, (int, int)> GenerateMap()
+        static void ReplacePattern(List<char> charList)
         {
-            Dictionary<char, (int, int)> map = [];
+            for (int i = 0; i < charList.Count - 2; i++)
+            {
+                if (charList[i] == '^' && charList[i + 1] == '<' && charList[i + 2] == 'A')
+                {
+                    charList[i] = '<';
+                    charList[i + 1] = '^';
+                    charList[i + 2] = 'A';
+                }
 
-            map.Add('0', (3, 1));
-            map.Add('A', (3, 2));
-
-            map.Add('1', (2, 0));
-            map.Add('2', (2, 1));
-            map.Add('3', (2, 2));
-
-            map.Add('4', (1, 0));
-            map.Add('5', (1, 1));
-            map.Add('6', (1, 2));
-
-            map.Add('7', (0, 0));
-            map.Add('8', (0, 1));
-            map.Add('9', (0, 2));
-
-            return map;
+                if (charList[i] == 'v' && charList[i + 1] == '<' && charList[i + 2] == 'A')
+                {
+                    charList[i] = '<';
+                    charList[i + 1] = 'v';
+                    charList[i + 2] = 'A';
+                }
+            }
         }
     }
 }
