@@ -6,6 +6,12 @@
         public short Value { get; set; }
         public bool Bool => Convert.ToBoolean(Value);
 
+        public Wire(string id, string value)
+        {
+            Id = id;
+            Value = short.Parse(value);
+        }
+
         public Wire(string id, short value)
         {
             Id = id;

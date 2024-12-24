@@ -2,9 +2,7 @@
 {
     internal abstract class Gate
     {
-        public Wire Input1 { get; set; }
-        public Wire Input2 { get; set; }
-
-        public abstract Wire GetWireOutput();
+        public abstract string Id { get; }
+        public abstract Wire GetWireOutput(Wire input1, Wire input2, string newWireId);
     }
 }
